@@ -1,7 +1,10 @@
 package com.trust.inews.studiogate.listener;
 
 import com.trust.inews.studiogate.bean.rocreate.*;
+import com.trust.inews.studiogate.config.Config;
+import com.trust.inews.studiogate.config.Constant;
 import com.trust.inews.studiogate.httpclient.HttpClient;
+import com.trust.inews.studiogate.session.NativeCache;
 import com.trust.inews.studiogate.util.DateUtil;
 import com.trust.inews.studiogate.util.FileUtils;
 import com.trust.inews.studiogate.util.NewsUtils;
@@ -31,7 +34,9 @@ public class FileListener extends FileAlterationListenerAdaptor {
      * 文件创建执行
      */
     public void onFileCreate(File file) {
-
+        if (Constant.SLAVE.equals(Config.serverMode) && NativeCache.get(Constant.MASTER_STATUS).toString().equals(Constant.MASTER_ON)){
+            return;
+        }
         logger.info("[新建]:" + file.getAbsolutePath());
         File parentFile = file.getParentFile();
         if (parentFile.isDirectory()) {
@@ -44,6 +49,9 @@ public class FileListener extends FileAlterationListenerAdaptor {
      * 文件修改执行
      */
     public void onFileChange(File file) {
+        if (Constant.SLAVE.equals(Config.serverMode) && NativeCache.get(Constant.MASTER_STATUS).toString().equals(Constant.MASTER_ON)){
+            return;
+        }
         logger.info("[修改]:" + file.getAbsolutePath());
         long start = System.currentTimeMillis();
         File parentFile = file.getParentFile();
@@ -59,6 +67,9 @@ public class FileListener extends FileAlterationListenerAdaptor {
      * 文件删除执行
      */
     public void onFileDelete(File file) {
+        if (Constant.SLAVE.equals(Config.serverMode) && NativeCache.get(Constant.MASTER_STATUS).toString().equals(Constant.MASTER_ON)){
+            return;
+        }
         logger.info("[删除]:" + file.getAbsolutePath());
         File parentFile = file.getParentFile();
         if (parentFile.isDirectory()) {
@@ -109,7 +120,6 @@ public class FileListener extends FileAlterationListenerAdaptor {
         String lanmu = "";//栏目
         Integer duration = 0;
         String modifyTime = DateUtil.dateToString(FileUtils.getDirModifyTime(parentFile.getAbsolutePath()), DateUtil.T_EN_SECONDS_FORMAT_PATTERN);//串联单最新修改时间
-        DateUtil.timeToSeconds("fasdfad");
         List<Story> stories = new ArrayList<>();
         File[] files = parentFile.listFiles();
         for (File f : files) {

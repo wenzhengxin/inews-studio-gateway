@@ -4,12 +4,13 @@ package com.trust.inews.studiogate;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import com.trust.inews.studiogate.config.Config;
+import com.trust.inews.studiogate.config.Constant;
 import com.trust.inews.studiogate.config.StudioProperties;
 import com.trust.inews.studiogate.listener.FileListener;
-import com.trust.inews.studiogate.session.SessionUtil;
+import com.trust.inews.studiogate.session.NativeCache;
+import com.trust.inews.studiogate.tcpclient.TcpClient;
 import com.trust.inews.studiogate.tcpserver.TcpServer;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
@@ -44,27 +45,32 @@ public class INewsStudioGatewayApplication {
      * 启动服务
      */
     private static void start() {
-
-
-        //主备服务连接
-        Thread tcpServer = new Thread(new TcpServer(1111));
-        tcpServer.start();
-        try {
-            //开启串联单监听器
-            startFileListener();
-        }catch (Exception e){
-            logger.error("结束程序");
-            System.exit(0);
+        //
+        NativeCache.put(Constant.MASTER_STATUS, Constant.MASTER_ON);
+        //主
+        if (Constant.MASTER.equals(Config.serverMode)){
+            //主备服务连接
+            Thread tcpServer = new Thread(new TcpServer(1111));
+            tcpServer.start();
         }
+        //备
+        if (Constant.SLAVE.equals(Config.serverMode)){
+            //主备服务连接
+            Thread tcpClient = new Thread(new TcpClient(Config.masterHost, Config.masterPort, Constant.TCP_CLIENT_NAME));
+            tcpClient.start();
+        }
+        //开启串联单监听器
+        startFileListener();
+
 
 
     }
 
     private static void startFileListener() {
         // 监控目录
-        String inewsDir = Config.inewsDir;
+        String inewsDir = Config.newsFilePath;
         // 轮询间隔 秒
-        long interval = TimeUnit.SECONDS.toMillis(Config.interval);
+        long interval = TimeUnit.SECONDS.toMillis(Config.monitorInterval);
         // 创建过滤器 只监听文件
         IOFileFilter filter = FileFilterUtils.and(
                 FileFilterUtils.fileFileFilter());

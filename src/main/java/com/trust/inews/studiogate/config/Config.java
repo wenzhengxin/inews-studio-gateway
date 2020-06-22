@@ -8,8 +8,12 @@ import java.util.Properties;
  * 全局配置信息实体类
  */
 public class Config {
-    public static String inewsDir;//inews串联单存放路径
-    public static Integer interval;
+    public static String newsFilePath;//inews串联单存放路径
+    public static Integer monitorInterval;//监听频率
+    public static String newsColumn;//新闻栏目
+    public static String serverMode;//运行状态：master主，slave备
+    public static String masterHost;//运行状态：master主，slave备
+    public static Integer masterPort;//运行状态：master主，slave备
     public static String httpHost; //演播室控制系统http服务ip
     public static Integer httpPort; //演播室控制系统http端口
     public static String httpHostBK; //演播室控制系统http服务ip
@@ -64,9 +68,15 @@ public class Config {
      */
     public static Boolean setConfig(Properties prop) {
         try {
-            inewsDir = prop.getProperty("inews.dir");
-            if (StringUtils.isNotBlank(prop.getProperty("interval"))) {
-                interval = Integer.parseInt(prop.getProperty("interval"));
+            newsFilePath = prop.getProperty("news.file.path");
+            newsColumn = prop.getProperty("news.column");
+            serverMode = prop.getProperty("server.mode");
+            masterHost = prop.getProperty("master.host");
+            if (StringUtils.isNotBlank(prop.getProperty("master.port"))) {
+                masterPort = Integer.parseInt(prop.getProperty("master.port"));
+            }
+            if (StringUtils.isNotBlank(prop.getProperty("monitor.interval"))) {
+                monitorInterval = Integer.parseInt(prop.getProperty("monitor.interval"));
             }
             httpHost = prop.getProperty("http.host");
             if (StringUtils.isNotEmpty(prop.getProperty("http.port"))) {

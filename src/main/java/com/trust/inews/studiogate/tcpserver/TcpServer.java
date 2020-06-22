@@ -50,7 +50,6 @@ public class TcpServer implements Runnable {
                             pl.addLast(new StringDecoder(Constant.UTF_16BE)); //字符解码器
                             pl.addLast(new StringEncoder(Constant.UTF_16BE)); //字符编码器
                             pl.addLast(new HeartbeatHandler()); //处理心跳
-                            pl.addLast(new RoAckHandler()); //处理roAck回复信息
                             pl.addLast(new ServerHandler()); //主要处理连接异常，并关闭连接
                         }
                     });

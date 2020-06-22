@@ -23,4 +23,12 @@ public class Constant {
     //AttributeKey tcpClient，在channel中保存客户端对象，用于断线重连
     public static final AttributeKey<TcpClient> TCP_CLIENT = AttributeKey.newInstance("tcpClient");
 
+    public static final String MASTER = "master";
+    public static final String SLAVE = "slave";
+    public static final String MASTER_STATUS = "master_status";
+    public static final String MASTER_ON = "ON";
+    public static final String MASTER_OFF = "OFF";
+
+
+
 }
