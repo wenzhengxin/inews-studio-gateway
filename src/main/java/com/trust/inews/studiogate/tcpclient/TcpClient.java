@@ -55,7 +55,6 @@ public class TcpClient implements Runnable {
                         pl.addLast(new StringEncoder(Constant.UTF_16BE)); //字符编码器
                         pl.addLast(new ClientHandler()); //客户端handler
                         pl.addLast(new HeartbeatResponseHandler()); //处理服务端心跳回复
-                        pl.addLast(new RoAckHandler()); //处理服务端Ack回复
                     }
                 });
 

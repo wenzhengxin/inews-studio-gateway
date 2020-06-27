@@ -2,6 +2,7 @@ package com.trust.inews.studiogate.tcpclient;
 
 import com.trust.inews.studiogate.config.Constant;
 import com.trust.inews.studiogate.protocol.heartbeat.HeartbeatBean;
+import com.trust.inews.studiogate.session.NativeCache;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -22,6 +23,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        NativeCache.put(Constant.MASTER_STATUS, Constant.MASTER_ON);
         //定时发送心跳
         scheduleSendHeartbeat(ctx);
 
@@ -56,7 +58,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.error("TcpClient：掉线了，正在尝试重连...");
+        logger.info("TcpClient：主服务器掉线，备用服务器监听开启");
+        NativeCache.put(Constant.MASTER_STATUS, Constant.MASTER_OFF);
         TcpClient tcpClient = ctx.channel().attr(Constant.TCP_CLIENT).get();
         tcpClient.connect();
     }
